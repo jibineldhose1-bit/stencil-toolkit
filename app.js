@@ -83,6 +83,84 @@ function isOutlinePixel(data, width, height, x, y) {
 
     return false;
 }
+function createMask(data, width, height) {
+
+    const mask = new Uint8Array(width * height);
+
+    for (let i = 0; i < width * height; i++) {
+
+        const p = i * 4;
+
+        const gray =
+            (data[p] + data[p + 1] + data[p + 2]) / 3;
+
+        mask[i] = gray < 128 ? 1 : 0;
+    }
+
+    return mask;
+}
+
+function erodeMask(mask, width, height, amount) {
+
+    let result = new Uint8Array(mask);
+
+    for (let step = 0; step < amount; step++) {
+
+        const temp = new Uint8Array(result);
+
+        for (let y = 1; y < height - 1; y++) {
+
+            for (let x = 1; x < width - 1; x++) {
+
+                const i = y * width + x;
+
+                if (result[i] === 0)
+                    continue;
+
+                if (
+                    result[i - 1] === 0 ||
+                    result[i + 1] === 0 ||
+                    result[i - width] === 0 ||
+                    result[i + width] === 0
+                ) {
+
+                    temp[i] = 0;
+
+                }
+
+            }
+
+        }
+
+        result = temp;
+
+    }
+
+    return result;
+}
+
+function drawMask(mask, width, height) {
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = "black";
+
+    for (let y = 0; y < height; y++) {
+
+        for (let x = 0; x < width; x++) {
+
+            if (mask[y * width + x]) {
+
+                ctx.fillRect(x, y, 1, 1);
+
+            }
+
+        }
+
+    }
+
+}
 
 convertBtn.addEventListener("click", function () {
 
@@ -101,26 +179,18 @@ convertBtn.addEventListener("click", function () {
     
 const mask = createMask(data, canvas.width, canvas.height);
 
-console.log(mask);
-    // Clear canvas
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+const smallMask = erodeMask(
+    mask,
+    canvas.width,
+    canvas.height,
+    4
+);
 
-    ctx.fillStyle = "black";
-
-for (let y = 0; y < canvas.height; y++) {
-
-    for (let x = 0; x < canvas.width; x++) {
-
-        if (isOutlinePixel(data, canvas.width, canvas.height, x, y)) {
-
-            ctx.fillRect(x, y, 1, 1);
-
-        }
-
-    }
-
-}
+drawMask(
+    smallMask,
+    canvas.width,
+    canvas.height
+);
 
 });
 downloadBtn.addEventListener("click", function () {
