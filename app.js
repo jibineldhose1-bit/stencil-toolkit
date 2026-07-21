@@ -98,6 +98,64 @@ function createMask(data, width, height) {
     return mask;
 }
 
+function removeNoise(mask, width, height, minSize) {
+
+    const visited = new Uint8Array(width * height);
+    const output = new Uint8Array(mask);
+
+    const stack = [];
+    const region = [];
+
+    for (let i = 0; i < mask.length; i++) {
+
+        if (!mask[i] || visited[i]) continue;
+
+        stack.push(i);
+        region.length = 0;
+        visited[i] = 1;
+
+        while (stack.length) {
+
+            const p = stack.pop();
+            region.push(p);
+
+            const x = p % width;
+            const y = (p / width) | 0;
+
+            const neighbours = [
+                p - 1,
+                p + 1,
+                p - width,
+                p + width
+            ];
+
+            for (const n of neighbours) {
+
+                if (n < 0 || n >= mask.length) continue;
+
+                if (!visited[n] && mask[n]) {
+
+                    visited[n] = 1;
+                    stack.push(n);
+
+                }
+
+            }
+
+        }
+
+        if (region.length < minSize) {
+
+            for (const p of region)
+                output[p] = 0;
+
+        }
+
+    }
+
+    return output;
+}
+
 function erodeMask(mask, width, height, amount) {
 
     let result = new Uint8Array(mask);
@@ -239,15 +297,22 @@ convertBtn.addEventListener("click", function () {
     
 const mask = createMask(data, canvas.width, canvas.height);
 
-const smallMask = erodeMask(
+const cleanMask = removeNoise(
     mask,
+    canvas.width,
+    canvas.height,
+    80
+);
+
+const smallMask = erodeMask(
+    cleanMask,
     canvas.width,
     canvas.height,
     4
 );
 
 renderStencil(
-    mask,
+    cleanMask,
     smallMask,
     canvas.width,
     canvas.height
