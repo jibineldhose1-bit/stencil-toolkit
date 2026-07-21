@@ -26,6 +26,38 @@ imageInput.addEventListener("change", function (e) {
     reader.readAsDataURL(file);
 });
 
+function isOutlinePixel(data, width, height, x, y) {
+
+    const index = (y * width + x) * 4;
+
+    // Not black
+    if (data[index] > 127) return false;
+
+    // Check all 8 neighbours
+    for (let dy = -1; dy <= 1; dy++) {
+
+        for (let dx = -1; dx <= 1; dx++) {
+
+            if (dx === 0 && dy === 0) continue;
+
+            const nx = x + dx;
+            const ny = y + dy;
+
+            // Outside image = edge
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height)
+                return true;
+
+            const n = (ny * width + nx) * 4;
+
+            // White neighbour = outline
+            if (data[n] > 127)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 convertBtn.addEventListener("click", function () {
 
     if (!originalImage.src) {
@@ -47,31 +79,19 @@ convertBtn.addEventListener("click", function () {
 
     ctx.fillStyle = "black";
 
-    const spacing = 20;
-    const radius = 2;
+for (let y = 0; y < canvas.height; y++) {
 
-    for (let y = 0; y < canvas.height; y += spacing) {
+    for (let x = 0; x < canvas.width; x++) {
 
-        for (let x = 0; x < canvas.width; x += spacing) {
+        if (isOutlinePixel(data, canvas.width, canvas.height, x, y)) {
 
-            const index = (y * canvas.width + x) * 4;
-
-            const r = data[index];
-            const g = data[index + 1];
-            const b = data[index + 2];
-
-            // Check if pixel is dark
-            if (r < 128 && g < 128 && b < 128) {
-
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                ctx.fill();
-
-            }
+            ctx.fillRect(x, y, 1, 1);
 
         }
 
     }
+
+}
 
 });
 downloadBtn.addEventListener("click", function () {
