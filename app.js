@@ -137,46 +137,48 @@ function erodeMask(mask, width, height, amount) {
     return result;
 }
 
-function drawMask(mask, width, height) {
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.fillStyle = "black";
-
-    for (let y = 0; y < height; y++) {
-
-        for (let x = 0; x < width; x++) {
-
-            if (mask[y * width + x]) {
-
-                ctx.fillRect(x, y, 1, 1);
-
-            }
-
-        }
-
-    }
-
-}
-
-function drawDotGrid(mask, width, height) {
+function renderStencil(mask, innerMask, width, height) {
 
     const spacing = 12;
     const radius = 3;
 
+    // White background
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
 
+    // Draw original mask (solid black)
+    ctx.fillStyle = "black";
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+
+            if (mask[y * width + x]) {
+                ctx.fillRect(x, y, 1, 1);
+            }
+
+        }
+    }
+
+    // Remove the eroded interior (leave outline)
+    ctx.fillStyle = "white";
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+
+            if (innerMask[y * width + x]) {
+                ctx.fillRect(x, y, 1, 1);
+            }
+
+        }
+    }
+
+    // Draw dots inside the interior
     ctx.fillStyle = "black";
 
     for (let y = 0; y < height; y += spacing) {
-
         for (let x = 0; x < width; x += spacing) {
 
-            const i = y * width + x;
-
-            if (mask[i]) {
+            if (innerMask[y * width + x]) {
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -185,7 +187,6 @@ function drawDotGrid(mask, width, height) {
             }
 
         }
-
     }
 
 }
@@ -245,14 +246,9 @@ const smallMask = erodeMask(
     4
 );
 
-drawDotGrid(
-    smallMask,
-    canvas.width,
-    canvas.height
-);
-
-    drawOutline(
+renderStencil(
     mask,
+    smallMask,
     canvas.width,
     canvas.height
 );
