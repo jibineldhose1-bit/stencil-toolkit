@@ -8,22 +8,20 @@ const ctx = canvas.getContext("2d");
 let originalImage = new Image();
 
 imageInput.addEventListener("change", function (e) {
-    const file = e.target.files[0];
 
+    const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    const url = URL.createObjectURL(file);
 
-    reader.onload = function (event) {
-        originalImage.onload = function () {
-            previewImage.src = originalImage.src;
-            previewImage.style.display = "block";
-        };
-
-        originalImage.src = event.target.result;
+    previewImage.onload = function () {
+        URL.revokeObjectURL(url);
     };
 
-    reader.readAsDataURL(file);
+    previewImage.src = url;
+    previewImage.style.display = "block";
+
+    originalImage.src = url;
 });
 
 function isBlack(data, index) {
