@@ -190,6 +190,37 @@ function drawDotGrid(mask, width, height) {
 
 }
 
+function drawOutline(mask, width, height) {
+
+    ctx.fillStyle = "black";
+
+    for (let y = 1; y < height - 1; y++) {
+
+        for (let x = 1; x < width - 1; x++) {
+
+            const i = y * width + x;
+
+            if (!mask[i]) continue;
+
+            if (
+                !mask[i - 1] ||
+                !mask[i + 1] ||
+                !mask[i - width] ||
+                !mask[i + width]
+            ) {
+
+                ctx.beginPath();
+                ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+
+            }
+
+        }
+
+    }
+
+}
+
 convertBtn.addEventListener("click", function () {
 
     if (!originalImage.src) {
@@ -220,6 +251,11 @@ drawDotGrid(
     canvas.height
 );
 
+    drawOutline(
+    mask,
+    canvas.width,
+    canvas.height
+);
 });
 downloadBtn.addEventListener("click", function () {
 
