@@ -26,12 +26,17 @@ imageInput.addEventListener("change", function (e) {
     reader.readAsDataURL(file);
 });
 
+function isBlack(data, index) {
+    const gray = (data[index] + data[index + 1] + data[index + 2]) / 3;
+    return gray < 128;
+}
+
 function isOutlinePixel(data, width, height, x, y) {
 
     const index = (y * width + x) * 4;
 
     // Not black
-    if (data[index] > 127) return false;
+    if (!isBlack(data, index)) return false;
 
     // Check all 8 neighbours
     for (let dy = -1; dy <= 1; dy++) {
@@ -50,7 +55,7 @@ function isOutlinePixel(data, width, height, x, y) {
             const n = (ny * width + nx) * 4;
 
             // White neighbour = outline
-            if (data[n] > 127)
+            if (!isBlack(data, n))
                 return true;
         }
     }
