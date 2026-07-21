@@ -31,6 +31,27 @@ function isBlack(data, index) {
     return gray < 128;
 }
 
+function createMask(data, width, height) {
+
+    const mask = [];
+
+    for (let y = 0; y < height; y++) {
+
+        mask[y] = [];
+
+        for (let x = 0; x < width; x++) {
+
+            const index = (y * width + x) * 4;
+
+            mask[y][x] = isBlack(data, index);
+
+        }
+
+    }
+
+    return mask;
+}
+
 function isOutlinePixel(data, width, height, x, y) {
 
     const index = (y * width + x) * 4;
@@ -77,7 +98,10 @@ convertBtn.addEventListener("click", function () {
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
+    
+const mask = createMask(data, canvas.width, canvas.height);
 
+console.log(mask);
     // Clear canvas
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
