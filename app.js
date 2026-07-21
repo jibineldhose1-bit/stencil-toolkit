@@ -47,7 +47,7 @@ convertBtn.addEventListener("click", function () {
 
     ctx.fillStyle = "black";
 
-    const spacing = 12;
+    const spacing = 20;
     const radius = 2;
 
     for (let y = 0; y < canvas.height; y += spacing) {
