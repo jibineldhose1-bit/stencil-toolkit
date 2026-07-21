@@ -38,10 +38,42 @@ convertBtn.addEventListener("click", function () {
 
     ctx.drawImage(originalImage, 0, 0);
 
-    // Placeholder
-    alert("Conversion engine will be added in the next step.");
-});
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
 
+    // Clear canvas
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "black";
+
+    const spacing = 8;
+    const radius = 2;
+
+    for (let y = 0; y < canvas.height; y += spacing) {
+
+        for (let x = 0; x < canvas.width; x += spacing) {
+
+            const index = (y * canvas.width + x) * 4;
+
+            const r = data[index];
+            const g = data[index + 1];
+            const b = data[index + 2];
+
+            // Check if pixel is dark
+            if (r < 128 && g < 128 && b < 128) {
+
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+            }
+
+        }
+
+    }
+
+});
 downloadBtn.addEventListener("click", function () {
 
     if (canvas.width === 0) {
