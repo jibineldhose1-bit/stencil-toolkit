@@ -103,7 +103,7 @@ function drawOutline(outline) {
 function drawContours(contours) {
 
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = SETTINGS.borderThickness;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
