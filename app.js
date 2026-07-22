@@ -173,7 +173,9 @@ const inner = adaptiveErode(
 );
 
     const border = extractOutline(binary);
-
+   
+const contours = traceContours(binary);
+console.log(contours);
     ctx.fillStyle = "white";
     ctx.fillRect(
         0,
