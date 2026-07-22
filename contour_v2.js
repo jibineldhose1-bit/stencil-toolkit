@@ -35,7 +35,7 @@ const approx = new cv.Mat();
 cv.approxPolyDP(
     contour,
     approx,
-    1.5,   // smoothing amount
+    1,   // smoothing amount
     true
 );
 
