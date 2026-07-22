@@ -113,11 +113,30 @@ function drawContours(contours) {
 
         ctx.moveTo(contour[0].x, contour[0].y);
 
-        for (let i = 1; i < contour.length; i++) {
-            ctx.lineTo(contour[i].x, contour[i].y);
+        for (let i = 1; i < contour.length - 1; i++) {
+
+            const xc = (contour[i].x + contour[i + 1].x) / 2;
+            const yc = (contour[i].y + contour[i + 1].y) / 2;
+
+            ctx.quadraticCurveTo(
+                contour[i].x,
+                contour[i].y,
+                xc,
+                yc
+            );
+
         }
+
+        ctx.quadraticCurveTo(
+            contour[contour.length - 1].x,
+            contour[contour.length - 1].y,
+            contour[0].x,
+            contour[0].y
+        );
 
         ctx.closePath();
         ctx.stroke();
+
     }
+
 }
