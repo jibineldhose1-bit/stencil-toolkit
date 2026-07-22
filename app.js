@@ -289,15 +289,34 @@ function erodeMask(binary, iterations) {
                 BORDER ENGINE
 ===========================================================*/
 
-function createBorderMask(original, inner) {
+function extractOutline(binary) {
 
-    const border = new Uint8Array(original.mask.length);
+    const width = binary.width;
+    const height = binary.height;
 
-    for (let i = 0; i < border.length; i++) {
+    const outline = new Uint8Array(width * height);
 
-        if (original.mask[i] && !inner.mask[i]) {
+    for (let y = 1; y < height - 1; y++) {
 
-            border[i] = 1;
+        for (let x = 1; x < width - 1; x++) {
+
+            const p = y * width + x;
+
+            if (!binary.mask[p])
+                continue;
+
+            if (
+
+                !binary.mask[p - 1] ||
+                !binary.mask[p + 1] ||
+                !binary.mask[p - width] ||
+                !binary.mask[p + width]
+
+            ) {
+
+                outline[p] = 1;
+
+            }
 
         }
 
@@ -305,14 +324,43 @@ function createBorderMask(original, inner) {
 
     return {
 
-        width: original.width,
-        height: original.height,
-        mask: border
+        width,
+        height,
+        mask: outline
 
     };
 
 }
 
+function createInteriorMask(binary, outline) {
+
+    const width = binary.width;
+    const height = binary.height;
+
+    const interior = new Uint8Array(width * height);
+
+    for (let i = 0; i < interior.length; i++) {
+
+        if (
+            binary.mask[i] &&
+            !outline.mask[i]
+        ) {
+
+            interior[i] = 1;
+
+        }
+
+    }
+
+    return {
+
+        width,
+        height,
+        mask: interior
+
+    };
+
+}
 /* ===========================================================
             HEXAGONAL DOT ENGINE
 ===========================================================*/
@@ -417,20 +465,17 @@ convertBtn.addEventListener("click", function () {
 
     binary = removeNoise(binary);
 
-    const inner = erodeMask(
-        binary,
-        SETTINGS.borderThickness
-    );
+    const outline = extractOutline(binary);
 
-    const border = createBorderMask(
-        binary,
-        inner
-    );
+const interior = createInteriorMask(
+    binary,
+    outline
+);
 
-    render(
-        border,
-        inner
-    );
+render(
+    outline,
+    interior
+);
 
 });
 
