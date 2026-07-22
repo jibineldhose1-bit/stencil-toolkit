@@ -22,7 +22,7 @@ function traceContours(mask) {
         contours,
         hierarchy,
         cv.RETR_TREE,
-        cv.CHAIN_APPROX_NONE
+        cv.CHAIN_APPROX_SIMPLE
     );
 
     const result = [];
