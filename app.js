@@ -470,18 +470,50 @@ function adaptiveErode(binary, iterations) {
 
 function drawOutline(outline) {
 
-    ctx.fillStyle = "black";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = Math.max(1, SETTINGS.borderThickness);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
 
-    for (let i = 0; i < outline.mask.length; i++) {
+    for (let y = 0; y < outline.height; y++) {
 
-        if (!outline.mask[i])
-            continue;
+        ctx.beginPath();
 
-        const x = i % outline.width;
-        const y = (i / outline.width) | 0;
+        let started = false;
 
-        ctx.fillRect(x, y, 1, 1);
+        for (let x = 0; x < outline.width; x++) {
+
+            const p = index(x, y, outline.width);
+
+            if (!outline.mask[p]) {
+
+                if (started) {
+                    ctx.stroke();
+                    ctx.beginPath();
+                    started = false;
+                }
+
+                continue;
+            }
+
+            if (!started) {
+
+                ctx.moveTo(x, y);
+                started = true;
+
+            } else {
+
+                ctx.lineTo(x, y);
+
+            }
+
+        }
+
+        if (started)
+            ctx.stroke();
+
     }
+
 }
 
 /* ---------- Improved Hexagonal Packing ---------- */
