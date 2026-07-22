@@ -102,7 +102,7 @@ function drawOutline(outline) {
 
 function drawContours(contours) {
 
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
