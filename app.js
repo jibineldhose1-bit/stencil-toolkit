@@ -17,12 +17,28 @@ let originalImage = null;
 
 const SETTINGS = {
 
-    borderThickness: 5,
-    dotSpacing: 12,
-    dotRadius: 3,
-    blackThreshold: 128
+    borderThickness:1,
+    dotSpacing:12,
+    dotRadius:3,
+    blackThreshold:128
 
 };
+
+const borderSlider =
+document.getElementById("borderThickness");
+
+const borderValue =
+document.getElementById("borderValue");
+
+borderSlider.addEventListener("input",function(){
+
+    SETTINGS.borderThickness =
+    parseFloat(this.value);
+
+    borderValue.textContent =
+    SETTINGS.borderThickness.toFixed(1)+" px";
+
+});
 
 imageInput.addEventListener("change", loadImage);
 
@@ -610,10 +626,17 @@ convertBtn.onclick = function () {
 
     binary = protectThinBridges(binary);
 
-    const inner = adaptiveErode(
-        binary,
-        SETTINGS.borderThickness
-    );
+    const erosionSteps = Math.max(
+    1,
+    Math.round(
+        SETTINGS.borderThickness * 2
+    )
+);
+
+const inner = adaptiveErode(
+    binary,
+    erosionSteps
+);
 
     const border = createBorderMask(
         binary,
