@@ -181,16 +181,15 @@ const inner = adaptiveErode(
     const border = extractOutline(binary);
    
 const contours = traceContours(binary);
-alert("Contours found: " + contours.length);
-    ctx.fillStyle = "white";
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
 
-    drawContours(contours);
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// Draw the outline
+drawContours(contours);
+
+// Draw the dots
+drawDots(inner);
 
 };
 
