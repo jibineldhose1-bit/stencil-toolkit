@@ -1,3 +1,6 @@
+cv['onRuntimeInitialized'] = () => {
+    console.log("OpenCV loaded successfully!");
+};
 /* ===========================================================
    STENCIL TOOLKIT V2
    PART 1
