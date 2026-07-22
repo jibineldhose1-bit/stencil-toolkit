@@ -249,38 +249,61 @@ function extractOutline(binary) {
 
     const outline = new Uint8Array(width * height);
 
-    for (let y = 1; y < height - 1; y++) {
+    const thickness = Math.max(
+        1,
+        Math.round(SETTINGS.borderThickness * 2)
+    );
 
-        for (let x = 1; x < width - 1; x++) {
+    for (let y = 0; y < height; y++) {
 
-            const p = y * width + x;
+        for (let x = 0; x < width; x++) {
+
+            const p = index(x, y, width);
 
             if (!binary.mask[p])
                 continue;
 
-            if (
+            let edge = false;
 
-                !binary.mask[p - 1] ||
-                !binary.mask[p + 1] ||
-                !binary.mask[p - width] ||
-                !binary.mask[p + width]
+            for (let dy = -thickness; dy <= thickness && !edge; dy++) {
 
-            ) {
+                for (let dx = -thickness; dx <= thickness; dx++) {
 
-                outline[p] = 1;
+                    if (dx === 0 && dy === 0)
+                        continue;
+
+                    const nx = x + dx;
+                    const ny = y + dy;
+
+                    if (!inside(nx, ny, width, height)) {
+
+                        edge = true;
+                        break;
+
+                    }
+
+                    if (!binary.mask[index(nx, ny, width)]) {
+
+                        edge = true;
+                        break;
+
+                    }
+
+                }
 
             }
+
+            if (edge)
+                outline[p] = 1;
 
         }
 
     }
 
     return {
-
         width,
         height,
         mask: outline
-
     };
 
 }
