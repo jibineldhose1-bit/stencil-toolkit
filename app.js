@@ -470,52 +470,19 @@ function adaptiveErode(binary, iterations) {
 
 function drawOutline(outline) {
 
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = Math.max(1, SETTINGS.borderThickness);
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
+    ctx.fillStyle = "black";
 
-    for (let y = 0; y < outline.height; y++) {
+    for (let i = 0; i < outline.mask.length; i++) {
 
-        ctx.beginPath();
+        if (!outline.mask[i])
+            continue;
 
-        let started = false;
+        const x = i % outline.width;
+        const y = (i / outline.width) | 0;
 
-        for (let x = 0; x < outline.width; x++) {
-
-            const p = index(x, y, outline.width);
-
-            if (!outline.mask[p]) {
-
-                if (started) {
-                    ctx.stroke();
-                    ctx.beginPath();
-                    started = false;
-                }
-
-                continue;
-            }
-
-            if (!started) {
-
-                ctx.moveTo(x, y);
-                started = true;
-
-            } else {
-
-                ctx.lineTo(x, y);
-
-            }
-
-        }
-
-        if (started)
-            ctx.stroke();
-
+        ctx.fillRect(x, y, 1, 1);
     }
-
 }
-
 /* ---------- Improved Hexagonal Packing ---------- */
 
 function drawDots(inner) {
