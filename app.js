@@ -40,6 +40,38 @@ borderSlider.addEventListener("input",function(){
 
 });
 
+const dotSizeSlider =
+document.getElementById("dotSize");
+
+const dotSizeValue =
+document.getElementById("dotSizeValue");
+
+dotSizeSlider.addEventListener("input", function () {
+
+    SETTINGS.dotRadius =
+        parseFloat(this.value);
+
+    dotSizeValue.textContent =
+        SETTINGS.dotRadius + " px";
+
+});
+
+const dotSpacingSlider =
+document.getElementById("dotSpacing");
+
+const dotSpacingValue =
+document.getElementById("dotSpacingValue");
+
+dotSpacingSlider.addEventListener("input", function () {
+
+    SETTINGS.dotSpacing =
+        parseInt(this.value);
+
+    dotSpacingValue.textContent =
+        SETTINGS.dotSpacing + " px";
+
+});
+
 imageInput.addEventListener("change", loadImage);
 
 function loadImage(e) {
