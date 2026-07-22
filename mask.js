@@ -23,6 +23,35 @@ function index(x, y, width) {
 
 }
 
+function createMask(imageData) {
+
+    const width = imageData.width;
+    const height = imageData.height;
+    const pixels = imageData.data;
+
+    const mask = new Uint8Array(width * height);
+
+    for (let i = 0; i < mask.length; i++) {
+
+        const p = i * 4;
+
+        mask[i] =
+            pixels[p] < SETTINGS.blackThreshold
+                ? 1
+                : 0;
+
+    }
+
+    return {
+
+        width,
+        height,
+        mask
+
+    };
+
+}
+
 function removeNoise(binary) {
 
     const width = binary.width;
