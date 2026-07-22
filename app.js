@@ -455,8 +455,21 @@ function drawDots(inner) {
             const p = index(ix, iy, inner.width);
 
             if (!inner.mask[p])
-                continue;
+    continue;
 
+// Keep dots away from the outline
+if (
+    p > inner.width &&
+    p < inner.mask.length - inner.width &&
+    (
+        !inner.mask[p - 1] ||
+        !inner.mask[p + 1] ||
+        !inner.mask[p - inner.width] ||
+        !inner.mask[p + inner.width]
+    )
+) {
+    continue;
+}
             ctx.beginPath();
 
             ctx.arc(
