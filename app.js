@@ -184,9 +184,7 @@ alert("Contours found: " + contours.length);
         canvas.height
     );
 
-    drawOutline(border);
-
-drawDots(inner);
+    drawContours(contours);
 
 };
 
