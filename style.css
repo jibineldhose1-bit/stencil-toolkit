@@ -66,3 +66,24 @@ canvas{
     border:2px dashed #ccc;
     border-radius:10px;
 }
+
+.setting{
+    margin:20px 0;
+}
+
+.setting label{
+
+    display:flex;
+    justify-content:space-between;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+}
+
+.setting input[type=range]{
+
+    width:100%;
+
+}
