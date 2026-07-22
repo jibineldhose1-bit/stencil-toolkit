@@ -99,3 +99,25 @@ function drawOutline(outline) {
         ctx.fillRect(x, y, 1, 1);
     }
 }
+
+function drawContours(contours) {
+
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 1;
+
+    for (const contour of contours) {
+
+        if (contour.length < 2) continue;
+
+        ctx.beginPath();
+
+        ctx.moveTo(contour[0].x, contour[0].y);
+
+        for (let i = 1; i < contour.length; i++) {
+            ctx.lineTo(contour[i].x, contour[i].y);
+        }
+
+        ctx.closePath();
+        ctx.stroke();
+    }
+}
