@@ -143,3 +143,112 @@ function removeNoise(binary) {
     return binary;
 
 }
+
+function protectThinBridges(binary) {
+
+    const width = binary.width;
+    const height = binary.height;
+
+    const protectedMask = cloneMask(binary.mask);
+
+    for (let y = 2; y < height - 2; y++) {
+
+        for (let x = 2; x < width - 2; x++) {
+
+            const p = index(x, y, width);
+
+            if (!binary.mask[p])
+                continue;
+
+            let count = 0;
+
+            for (let yy = -1; yy <= 1; yy++) {
+
+                for (let xx = -1; xx <= 1; xx++) {
+
+                    if (binary.mask[index(x + xx, y + yy, width)])
+                        count++;
+
+                }
+
+            }
+
+            /* Thin bridge */
+
+            if (count <= 4) {
+
+                protectedMask[p] = 2;
+
+            }
+
+        }
+
+    }
+
+    return {
+
+        width,
+        height,
+        mask: protectedMask
+
+    };
+
+}
+
+/* ---------- Adaptive Erosion ---------- */
+
+function adaptiveErode(binary, iterations) {
+
+    let current = cloneMask(binary.mask);
+
+    const width = binary.width;
+    const height = binary.height;
+
+    for (let step = 0; step < iterations; step++) {
+
+        const next = cloneMask(current);
+
+        for (let y = 1; y < height - 1; y++) {
+
+            for (let x = 1; x < width - 1; x++) {
+
+                const p = index(x, y, width);
+
+                if (current[p] == 0)
+                    continue;
+
+                /* Protected bridge */
+
+                if (current[p] == 2)
+                    continue;
+
+                if (
+
+                    current[index(x - 1, y, width)] == 0 ||
+                    current[index(x + 1, y, width)] == 0 ||
+                    current[index(x, y - 1, width)] == 0 ||
+                    current[index(x, y + 1, width)] == 0
+
+                ) {
+
+                    next[p] = 0;
+
+                }
+
+            }
+
+        }
+
+        current = next;
+
+    }
+
+    return {
+
+        width,
+        height,
+        mask: current
+
+    };
+
+}
