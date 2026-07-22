@@ -236,54 +236,7 @@ function removeNoise(binary) {
    Border Engine + Adaptive Erosion + Convert Button
 ===========================================================*/
 
-function erodeMask(binary, iterations) {
 
-    const width = binary.width;
-    const height = binary.height;
-
-    let current = cloneMask(binary.mask);
-
-    for (let step = 0; step < iterations; step++) {
-
-        const next = cloneMask(current);
-
-        for (let y = 1; y < height - 1; y++) {
-
-            for (let x = 1; x < width - 1; x++) {
-
-                const i = index(x, y, width);
-
-                if (!current[i])
-                    continue;
-
-                if (
-                    !current[index(x - 1, y, width)] ||
-                    !current[index(x + 1, y, width)] ||
-                    !current[index(x, y - 1, width)] ||
-                    !current[index(x, y + 1, width)]
-                ) {
-
-                    next[i] = 0;
-
-                }
-
-            }
-
-        }
-
-        current = next;
-
-    }
-
-    return {
-
-        width,
-        height,
-        mask: current
-
-    };
-
-}
 
 /* ===========================================================
                 BORDER ENGINE
@@ -332,152 +285,16 @@ function extractOutline(binary) {
 
 }
 
-function createInteriorMask(binary, outline) {
 
-    const width = binary.width;
-    const height = binary.height;
-
-    const interior = new Uint8Array(width * height);
-
-    for (let i = 0; i < interior.length; i++) {
-
-        if (
-            binary.mask[i] &&
-            !outline.mask[i]
-        ) {
-
-            interior[i] = 1;
-
-        }
-
-    }
-
-    return {
-
-        width,
-        height,
-        mask: interior
-
-    };
-
-}
 /* ===========================================================
             HEXAGONAL DOT ENGINE
 ===========================================================*/
 
-function render(border, inner) {
-
-    const width = border.width;
-    const height = border.height;
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, width, height);
-
-    /* Draw Border */
-
-    ctx.fillStyle = "black";
-
-    for (let i = 0; i < border.mask.length; i++) {
-
-        if (!border.mask[i])
-            continue;
-
-        const x = i % width;
-        const y = Math.floor(i / width);
-
-        ctx.fillRect(x, y, 1, 1);
-
-    }
-
-    /* Draw Hexagonal Dots */
-
-    const spacing = SETTINGS.dotSpacing;
-    const radius = SETTINGS.dotRadius;
-
-    ctx.fillStyle = "black";
-
-    for (let y = radius; y < height; y += spacing) {
-
-        const offset =
-            (Math.floor(y / spacing) % 2)
-                ? spacing / 2
-                : 0;
-
-        for (
-            let x = radius + offset;
-            x < width;
-            x += spacing
-        ) {
-
-            const xi = Math.floor(x);
-            const yi = Math.floor(y);
-
-            const p = index(xi, yi, width);
-
-            if (!inner.mask[p])
-                continue;
-
-            ctx.beginPath();
-
-            ctx.arc(
-                x,
-                y,
-                radius,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-
-        }
-
-    }
-
-}
 
 /* ===========================================================
             CONVERT BUTTON
 ===========================================================*/
 
-convertBtn.addEventListener("click", function () {
-
-    if (!originalImage) {
-
-        alert("Please upload an image.");
-
-        return;
-
-    }
-
-    canvas.width = originalImage.width;
-    canvas.height = originalImage.height;
-
-    ctx.drawImage(originalImage, 0, 0);
-
-    const img = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    let binary = createMask(img);
-
-    binary = removeNoise(binary);
-
-    const outline = extractOutline(binary);
-
-const interior = createInteriorMask(
-    binary,
-    outline
-);
-
-render(
-    outline,
-    interior
-);
-
-});
 
 /* ===========================================================
    STENCIL TOOLKIT V2
@@ -596,6 +413,22 @@ function adaptiveErode(binary, iterations) {
 
 }
 
+function drawOutline(outline) {
+
+    ctx.fillStyle = "black";
+
+    for (let i = 0; i < outline.mask.length; i++) {
+
+        if (!outline.mask[i])
+            continue;
+
+        const x = i % outline.width;
+        const y = (i / outline.width) | 0;
+
+        ctx.fillRect(x, y, 1, 1);
+    }
+}
+
 /* ---------- Improved Hexagonal Packing ---------- */
 
 function drawDots(inner) {
@@ -683,10 +516,7 @@ const inner = adaptiveErode(
     erosionSteps
 );
 
-    const border = createBorderMask(
-        binary,
-        inner
-    );
+    const border = extractOutline(binary);
 
     ctx.fillStyle = "white";
     ctx.fillRect(
@@ -696,20 +526,8 @@ const inner = adaptiveErode(
         canvas.height
     );
 
-    ctx.fillStyle = "black";
+    drawOutline(border);
 
-    for (let i = 0; i < border.mask.length; i++) {
-
-        if (!border.mask[i])
-            continue;
-
-        const x = i % border.width;
-        const y = (i / border.width) | 0;
-
-        ctx.fillRect(x, y, 1, 1);
-
-    }
-
-    drawDots(inner);
+drawDots(inner);
 
 };
