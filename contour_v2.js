@@ -30,14 +30,16 @@ function traceContours(mask) {
     for (let i = 0; i < contours.size(); i++) {
 
         const contour = contours.get(i);
-const approx = new cv.Mat();
+const points = [];
 
-cv.approxPolyDP(
-    contour,
-    approx,
-    1,   // smoothing amount
-    true
-);
+for (let j = 0; j < contour.rows; j++) {
+
+    points.push({
+        x: contour.intPtr(j, 0)[0],
+        y: contour.intPtr(j, 0)[1]
+    });
+
+}
 
 const points = [];
 
