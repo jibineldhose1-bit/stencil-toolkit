@@ -104,10 +104,12 @@ function drawContours(contours) {
 
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
 
     for (const contour of contours) {
 
-        if (contour.length < 2) continue;
+        if (contour.length < 3) continue;
 
         ctx.beginPath();
 
